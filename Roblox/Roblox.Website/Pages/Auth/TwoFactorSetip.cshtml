@@ -1,0 +1,46 @@
+@page "/auth/2fa/{token}"
+@model Roblox.Website.Pages.Auth.TwoFactorSetup
+
+@{
+    Layout = "Shared/_Layout";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12 col-md-6 offset-md-3 col-lg-4 offset-lg-4">
+            <div class="card card-body">
+                <h2>2FA</h2>
+                @if (Model.tokenInvalid)
+                {
+                    <p class="text-danger">This link is invalid or has already been used.</p>
+                }
+                else
+                {
+                    @if (Model.errorMessage != null)
+                    {
+                        <p class="text-danger">@Model.errorMessage</p>
+                    }
+                    <p class="mb-1">Enter this code in your authenticator app:</p>
+                    <p class="mb-1" style="word-break: break-all;" id="secret-code"><b>@Model.secret</b></p>
+                    <button type="button" class="btn btn-primary mb-3" onclick="copySecret()">Copy</button>
+                    <form method="post">
+                        <p class="mb-1">Then, paste the 6 digit code the authenticator gave you:</p>
+                        <input type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="6 digit code" name="code" class="form-control mb-2"/>
+                        @Html.AntiForgeryToken()
+                        <input class="btn btn-primary" type="submit" value="Done"/>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (!Model.tokenInvalid)
+{
+    <script>
+        function copySecret() {
+            var text = document.getElementById('secret-code').innerText;
+            navigator.clipboard.writeText(text);
+        }
+    </script>
+}
